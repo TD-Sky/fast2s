@@ -1,37 +1,40 @@
+use std::sync::LazyLock;
+
 use hashbrown::{HashMap, HashSet};
 
 use crate::{hashmap, hashset};
-use lazy_static::lazy_static;
 
 type Word = [char; 2];
 
-static MAP_DATA: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/map.bin"));
+const MAP_DATA: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/map.bin"));
 
-lazy_static! {
-    /// state machine for the translation
-    static ref MAP: HashMap<char, char> = {
-        let data: Vec<(char, char)> = bincode::deserialize(MAP_DATA).unwrap();
-        data.into_iter().collect()
-    };
+/// state machine for the translation
+static MAP: LazyLock<HashMap<char, char>> = LazyLock::new(|| {
+    let data: Vec<(char, char)> = bincode::decode_from_slice(MAP_DATA, bincode::config::standard())
+        .unwrap()
+        .0;
+    data.into_iter().collect()
+});
 
-    // thanks https://github.com/bosondata/simplet2s-rs/blob/master/src/lib.rs#L8 for this special logic
-    // Traditional Chinese -> Not convert case
-    static ref T2S_EXCLUDE: HashMap<char, HashSet<Word>> = {
-        hashmap!{
-            '兒' => hashset!{['兒','寬']},
-            '覆' => hashset!{['答', '覆'], ['批','覆'], ['回','覆']},
-            '夥' => hashset!{['甚','夥']},
-            '藉' => hashset!{['慰','藉'], ['狼','藉']},
-            '瞭' => hashset!{['瞭','望']},
-            '麽' => hashset!{['幺','麽']},
-            '幺' => hashset!{['幺','麽']},
-            '於' => hashset!{['樊','於']},
-            '乾' => hashset!{['乾','隆'], ['乾', '坤'], ['乾', '卦']}
-        }
-    };
-    // Traditional Chinese -> Special convert cases ( only convert in certain case )
-    static ref T2S_SPECIAL_CONVERT_TYPE: HashMap<char, HashMap<Word, char>> = {
-        hashmap!{
+// thanks https://github.com/bosondata/simplet2s-rs/blob/master/src/lib.rs#L8 for this special logic
+// Traditional Chinese -> Not convert case
+static T2S_EXCLUDE: LazyLock<HashMap<char, HashSet<Word>>> = LazyLock::new(|| {
+    hashmap! {
+        '兒' => hashset!{['兒','寬']},
+        '覆' => hashset!{['答', '覆'], ['批','覆'], ['回','覆']},
+        '夥' => hashset!{['甚','夥']},
+        '藉' => hashset!{['慰','藉'], ['狼','藉']},
+        '瞭' => hashset!{['瞭','望']},
+        '麽' => hashset!{['幺','麽']},
+        '幺' => hashset!{['幺','麽']},
+        '於' => hashset!{['樊','於']},
+        '乾' => hashset!{['乾','隆'], ['乾', '坤'], ['乾', '卦']}
+    }
+});
+// Traditional Chinese -> Special convert cases ( only convert in certain case )
+static T2S_SPECIAL_CONVERT_TYPE: LazyLock<HashMap<char, HashMap<Word, char>>> =
+    LazyLock::new(|| {
+        hashmap! {
             // not convert these chars if not in special cases
             '藉' => hashmap!{['藉','口'] => '借', ['憑','藉'] => '借'},
             '著' => hashmap!{['看','著'] => '着'},
@@ -42,8 +45,7 @@ lazy_static! {
             '讎' => hashmap!{['校','讎'] => '雠', ['讎','定'] => '雠', ['仇','讎'] => '雠'},
             '畫' => hashmap!{['計','畫'] => '划', ['企','畫'] => '划'},
         }
-    };
-}
+    });
 
 #[inline(always)]
 pub fn special_convert(prev: char, cur: char, next: char) -> char {

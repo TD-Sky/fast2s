@@ -7,9 +7,9 @@ fn main() {
 
     let out_dir = env::var_os("OUT_DIR").unwrap();
     let out_file = Path::new(&out_dir).join("map.bin");
-    let f = File::create(&out_file).unwrap();
+    let mut f = File::create(&out_file).unwrap();
     let v = get_kv("src/t2s.txt");
-    bincode::serialize_into(f, &v).unwrap();
+    bincode::encode_into_std_write(&v, &mut f, bincode::config::standard()).unwrap();
 }
 
 fn s2c(s: &str) -> char {
