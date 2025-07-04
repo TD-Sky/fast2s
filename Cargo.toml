@@ -2,7 +2,7 @@
 name = "fast2s"
 version = "0.3.1"
 authors = ["Tyr Chen <tyr.chen@gmail.com>"]
-edition = "2021"
+edition = "2024"
 license = "MIT"
 documentation = "https://docs.rs/fast2s"
 repository = "https://github.com/tyrchen/fast2s"
