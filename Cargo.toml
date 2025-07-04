@@ -13,6 +13,7 @@ A fast Traditional Chinese to Simplified Chinese conversion library. Built with 
 readme = "README.md"
 keywords = ["chinese", "simplified", "traditional", "convert", "hanzi"]
 categories = ["text-processing", "localization", "internationalization", "value-formatting"]
+include = ["src/**/*", "Cargo.toml", "LICENSE*", "README.md", "build.rs"]
 
 [dependencies]
 bincode = "2.0"
