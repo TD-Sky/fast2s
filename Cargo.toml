@@ -15,12 +15,11 @@ keywords = ["chinese", "simplified", "traditional", "convert", "hanzi"]
 categories = ["text-processing", "localization", "internationalization", "value-formatting"]
 
 [dependencies]
-bincode = "1.3.3"
-hashbrown = "0.12.1"
-lazy_static = "1.4.0"
+bincode = "2.0"
+hashbrown = "0.15"
 
 [build-dependencies]
-bincode = "1.3.3"
+bincode = "2.0"
 
 #[profile.release]
 #lto = true
