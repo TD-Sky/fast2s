@@ -32,14 +32,14 @@ fn criterion_benchmark(c: &mut Criterion) {
             });
         });
 
-        let id = format!("opencc {}", name);
+        let id = format!("opencc {name}");
         g.bench_function(&id, |b| {
             b.iter(|| {
                 opencc.convert(data);
             });
         });
 
-        let id = format!("simplet2s {}", name);
+        let id = format!("simplet2s {name}");
         g.bench_function(&id, |b| {
             b.iter(|| {
                 simplet2s::convert(data);
